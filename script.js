@@ -266,7 +266,7 @@ function closeThankYouPopup() {
 
 
   const videos = [
-   Shorts and regular YouTube videos
+   //Shorts and regular YouTube videos
   "https://www.youtube.com/embed/k4UNU0dDvMA?autoplay=1&mute=1&controls=0&loop=1&playlist=k4UNU0dDvMA&rel=0",
   "https://www.youtube.com/embed/sEwdYLadc_Q?autoplay=1&mute=1&controls=0&loop=1&playlist=sEwdYLadc_Q&rel=0",
   "https://www.youtube.com/embed/PPt220id6KM?autoplay=1&mute=1&controls=0&loop=1&playlist=PPt220id6KM&rel=0"
@@ -290,6 +290,7 @@ heroVideo.src = videos[0];
 
 // Change every 20 seconds
 setInterval(loadNextVideo, 20000);
+
 
 
 
