@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>esCrawl - Coming Soon</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet"/>
+</head>
+<body>
+<main>
+  <header class="header">
+    <div class="logo-box"><img src="ESCRAWL 2.png" alt="logo" class="logo-img"></div>
+    <button class="scroll-button" onclick="scrollToSection()">Say Hello</button>
+  </header>
+
+<section class="hero-section">
+  <div class="hero-content">
+    <!-- Left Side: Text + Countdown -->
+    <div class="hero-text-content">
+      <p class="hero-text">Something great is on the way</p>
+      <h1 class="main-heading">COMING SOON</h1>
+      <div class="countdown">
+        <div><span id="days">00</span><small>Days</small></div>
+        <div><span id="hours">00</span><small>Hours</small></div>
+        <div><span id="minutes">00</span><small>Mins.</small></div>
+        <div><span id="seconds">00</span><small>Secs.</small></div>
+      </div>
+      <p class="launch-date">Launching: <strong>October 2025</strong></p>
+    </div>
+
+    <!-- Right Side: Rotating Videos -->
+    <div class="video-container">
+      <div class="video-wrapper">
+        <iframe
+          id="hero-video"
+          class="hero-video"
+          src=""
+          frameborder="0"
+          allow="autoplay; encrypted-media"
+          allowfullscreen>
+        </iframe>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section id="contact" class="contact-section">
+  <h2 style="color: #ffffff;">Are you ready?</h2>
+
+  <p class="paragraph">
+    At esCrawl, we believe every great product deserves a platform — especially those crafted by emerging startups and passionate local vendors. Our mission is to give these businesses the visibility, voice, and customer base they often struggle to find in crowded marketplaces. We offer not just a storefront, but a supportive ecosystem — complete with free marketing, brand-building tools, and community-led growth. For customers, esCrawl is a space to discover purpose-driven, high-quality products rooted in authenticity, innovation, and culture. Every purchase here supports a dream, a story, and a local business working to make a mark.
+  </p>
+
+  <img src="paper_plane.avif" alt="Paper Plane" class="icon" />
+  <p style="color: #aac6cf;" class="sub-text">Get notified the moment we launch — and be first in line 🚀</p>
+
+  <!-- Toggle Buttons -->
+  <div class="audience-buttons">
+    <button class="audience-btn" id="customerBtn" onclick="toggleForm('customer')">I'm a Customer</button>
+    <button class="audience-btn" id="vendorBtn" onclick="toggleForm('vendor')">I'm a Vendor / Startup</button>
+  </div>
+
+  <!-- Customer Form -->
+  <form id="customer-form" class="user-form hidden">
+    <h3>🎁 Early Access Bonus</h3>
+    <p class="form-subtext">Sign up now and get <strong>₹100 off</strong> your first purchase! <br>Just use this email when you log in after launch.</p>
+
+    <label for="email">Your Email Address *</label>
+    <input type="email" id="email" name="email" required placeholder="you@example.com" />
+
+    <button type="submit" class="vendor-submit">Notify Me</button>
+  </form>
+
+  <!-- Vendor Form -->
+  <form id="vendor-form" class="user-form hidden">
+    <h3><span style="font-size: 1.4rem;">🎯</span> Grow With <span style="color: #f1c28f;">esCrawl</span></h3>
+    <p class="form-subtext">We’ll help you shine. No fees*, no gatekeeping — just real visibility.</p>
+
+    <label for="business">Business Name *</label>
+    <input type="text" id="business" name="business" required placeholder="Your Brand Name" />
+
+    <label for="category">Product Category</label>
+    <input type="text" id="category" name="category" placeholder="e.g., Apparel, Wellness, Tech Gadgets" />
+
+    <label for="website">Website or Instagram</label>
+    <input type="url" id="website" name="website" placeholder="https://yourbrand.com" />
+
+    <label for="gst">GST Number (Optional)</label>
+    <input type="text" id="gst" name="gst" pattern="^([0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1})?$" placeholder="Optional (for now)" />
+
+    <label for="vendor-email">Business Email *</label>
+    <input type="email" id="vendor-email" name="email" required placeholder="you@business.com" />
+
+
+    <div class="vendor-badges">
+      <span>✅ No Listing Fee</span>
+      <span>📢 Free Marketing</span>
+      <span>🚀 Launch with Visibility</span>
+    </div>
+
+    <button type="submit" class="vendor-submit">Join Vendor Waitlist</button>
+  </form>
+</section>
+
+</main>
+
+<footer class="footer">
+  <div class="footer-container">
+    <div class="footer-column social">
+      <a href="#"><i class="fab fa-facebook fa-lg"></i></a>
+      <a href="http://www.linkedin.com/in/ESCRAWL-INDIA"><i class="fab fa-linkedin fa-lg"></i></a>
+      <a href="https://x.com/EscrawlIndia"><i class="fab fa-x-twitter fa-lg"></i></a>
+      <a href="https://www.instagram.com/escrawl.in?igsh=aXJib2d5OWs5d2Rz"><i class="fab fa-instagram fa-lg"></i></a>
+      <a href="http://www.youtube.com/@Escrawl"><i class="fab fa-youtube fa-lg"></i></a>
+    </div>
+    <div class="footer-column contact">
+      <a href="mailto:escrawlglobal@gmail.com">info@escrawl.com</a>
+    </div>
+    <div class="footer-column credits">
+      <p>© 2035 by WEHAVERYTHINGS. Powered and secured by <a href="https://escrawl.com">esCrawl</a></p>
+    </div>
+  </div>
+</footer>
+
+<!-- Success and Error Popups -->
+<div id="success-popup" class="popup hidden">
+  <div class="popup-content">
+    <span class="close-btn" onclick="closePopup('success-popup')">&times;</span>
+    <h3>✅ Email Sent Successfully!</h3>
+    <p>Thank you! We'll notify you when we launch.</p>
+  </div>
+</div>
+
+<div id="error-popup" class="popup hidden">
+  <div class="popup-content">
+    <span class="close-btn" onclick="closePopup('error-popup')">&times;</span>
+    <h3>❌ Something went wrong!</h3>
+    <p>Please check your email or try again.</p>
+  </div>
+</div>
+
+
+
+<!-- Floating Feedback Button -->
+<button id="feedbackBtn" class="feedback-floating-btn">💬</button>
+
+<!-- Feedback Modal -->
+<div id="feedbackModal" class="feedback-modal hidden">
+  <div class="feedback-modal-content" id="feedbackModalContent">
+    <span class="feedback-close" id="feedbackClose">&times;</span>
+    <h3>We'd Love to Hear From You</h3>
+    <form id="feedbackForm">
+      <textarea id="feedbackText" placeholder="Your suggestions, feedback or questions..." required></textarea>
+      <button type="submit">Send</button>
+    </form>
+  </div>
+</div>
+
+<!-- Thank You Popup -->
+<div id="thankYouPopup" class="thank-you-popup hidden">
+  <div class="popup-box">
+    <span class="close-thankyou" onclick="closeThankYouPopup()">&times;</span>
+    <div class="icon">🎉</div>
+    <h3>Thanks for your feedback!</h3>
+    <p>We appreciate your thoughts — they help us improve!</p>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
+
+
