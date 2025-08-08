@@ -113,7 +113,7 @@ customerForm.addEventListener("submit", async function (e) {
   submitCustomerBtn.textContent = "Submitting...";
 
   try {
-    const res = await fetch("http://localhost:5000/api/customers", {
+    const res = await fetch("https://escrawl-backend.onrender.com/api/customers", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email })
@@ -184,7 +184,7 @@ vendorForm.addEventListener("submit", async function (e) {
     }
 
     // Step 2: Save to backend (MongoDB)
-    const backendRes = await fetch("http://localhost:5000/api/vendors", {
+    const backendRes = await fetch("https://escrawl-backend.onrender.com/api/vendors", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ business, category, website, gst, email: vendorEmail })
@@ -290,6 +290,7 @@ heroVideo.src = videos[0];
 
 // Change every 20 seconds
 setInterval(loadNextVideo, 20000);
+
 
 
 
