@@ -227,7 +227,7 @@ const feedbackForm = document.getElementById("feedbackForm");
 const feedbackText = document.getElementById("feedbackText");
 
 // Auto-switch backend URL
-const BACKEND_URL = "https://escrawl-backend.onrender.com/api/feedback";
+const BACKEND_URL = "https://escrawl-backend.onrender.com";
  // <-- replace with your live backend URL
 
 // =============================
@@ -333,6 +333,7 @@ heroVideo.src = videos[0];
 
 // Change every 20 seconds
 setInterval(loadNextVideo, 20000);
+
 
 
 
