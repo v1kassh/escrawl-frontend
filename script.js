@@ -217,41 +217,83 @@ vendorForm.addEventListener("submit", async function (e) {
 
 
 
-
-
-
+// =============================
+// DOM Elements
+// =============================
 const feedbackBtn = document.getElementById("feedbackBtn");
 const feedbackModal = document.getElementById("feedbackModal");
 const feedbackClose = document.getElementById("feedbackClose");
 const feedbackForm = document.getElementById("feedbackForm");
 const feedbackText = document.getElementById("feedbackText");
-const feedbackModalContent = document.getElementById("feedbackModalContent");
 
+// Auto-switch backend URL
+const BACKEND_URL = "http://localhost:5000";
+ // <-- replace with your live backend URL
+
+// =============================
+// Open Modal
+// =============================
 feedbackBtn.addEventListener("click", () => {
   feedbackModal.classList.remove("hidden");
 });
 
+// =============================
+// Close Modal
+// =============================
 feedbackClose.addEventListener("click", () => {
   feedbackModal.classList.add("hidden");
 });
 
+// Close when clicking outside content
 window.addEventListener("click", (e) => {
   if (e.target === feedbackModal) {
     feedbackModal.classList.add("hidden");
   }
 });
 
-feedbackForm.addEventListener("submit", function (e) {
+// =============================
+// Handle Form Submission
+// =============================
+feedbackForm.addEventListener("submit", async function (e) {
   e.preventDefault();
   const text = feedbackText.value.trim();
-  if (text) {
-    console.log("Feedback submitted:", text);
+
+  if (!text) {
+    alert("Please write some feedback before submitting.");
+    return;
+  }
+
+  try {
+    // Send to backend
+    const res = await fetch(`${BACKEND_URL}/api/feedback`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.error || "Failed to submit feedback.");
+      return;
+    }
+
+    // Reset form & close modal
     feedbackText.value = "";
     feedbackModal.classList.add("hidden");
+
+    // Show thank-you popup
     showThankYouPopup();
+
+  } catch (error) {
+    console.error("Feedback submit error:", error);
+    alert("Something went wrong. Please try again.");
   }
 });
 
+// =============================
+// Thank-You Popup
+// =============================
 function showThankYouPopup() {
   const popup = document.getElementById("thankYouPopup");
   popup.classList.remove("hidden");
@@ -263,6 +305,7 @@ function showThankYouPopup() {
 function closeThankYouPopup() {
   document.getElementById("thankYouPopup").classList.add("hidden");
 }
+
 
 
   const videos = [
@@ -290,6 +333,7 @@ heroVideo.src = videos[0];
 
 // Change every 20 seconds
 setInterval(loadNextVideo, 20000);
+
 
 
 
