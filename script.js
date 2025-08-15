@@ -1,345 +1,254 @@
 // ===========================
-// Countdown Timer
+// CONFIG
 // ===========================
-const countdownDate = new Date("October 18, 2025 00:00:00").getTime();
+const CONFIG = {
+  launchDate: new Date("October 18, 2025 00:00:00").getTime(),
+  backendUrl:
+    location.hostname.includes("localhost") || location.hostname === "127.0.0.1"
+      ? "http://localhost:5000"
+      : "https://your-live-domain.com", // ← set your prod API origin
+  defaultVideos: [
+    "https://www.youtube.com/embed/k4UNU0dDvMA?autoplay=1&mute=1&controls=0&loop=1&playlist=k4UNU0dDvMA&rel=0",
+    "https://www.youtube.com/embed/sEwdYLadc_Q?autoplay=1&mute=1&controls=0&loop=1&playlist=sEwdYLadc_Q&rel=0",
+    "https://www.youtube.com/embed/PPt220id6KM?autoplay=1&mute=1&controls=0&loop=1&playlist=PPt220id6KM&rel=0"
+  ]
+};
 
-const timer = setInterval(() => {
-  const now = new Date().getTime();
-  const distance = countdownDate - now;
-
-  if (distance <= 0) {
-    clearInterval(timer);
-    document.querySelector(".countdown").innerHTML = "We are live!";
-    return;
-  }
-
-  const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-  const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-  const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-  document.getElementById("days").textContent = String(days).padStart(2, '0');
-  document.getElementById("hours").textContent = String(hours).padStart(2, '0');
-  document.getElementById("minutes").textContent = String(minutes).padStart(2, '0');
-  document.getElementById("seconds").textContent = String(seconds).padStart(2, '0');
-}, 1000);
-
+// Optionally expose dataLayer for marketing/analytics
+window.dataLayer = window.dataLayer || [];
+const track = (event, payload = {}) =>
+  window.dataLayer.push({ event, ...payload });
 
 // ===========================
-// Smooth Scroll
+// UTILS
 // ===========================
-function scrollToSection() {
-  document.getElementById("contact").scrollIntoView({ behavior: "smooth" });
-}
+const qs = (s) => document.querySelector(s);
+const qsa = (s) => Array.from(document.querySelectorAll(s));
+const byId = (id) => document.getElementById(id);
 
+const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
- const ABSTRACT_API_KEY = "127070b86cd84667a510bf17880c59c0"; // Replace with your key
-
-const customerForm = document.getElementById("customer-form");
-const vendorForm = document.getElementById("vendor-form");
-
-const submitCustomerBtn = customerForm.querySelector("button");
-const submitVendorBtn = vendorForm.querySelector("button");
-
-// ===========================
-// Email Format Validator
-// ===========================
-function validateEmail(email) {
-  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return re.test(email);
-}
-
-// ===========================
-// Show Popup
-// ===========================
-function showPopup(type, message = "Something happened.") {
-  const popupId = type === "success" ? "success-popup" : "error-popup";
-  const popup = document.getElementById(popupId);
-  if (!popup) return;
-  popup.querySelector("p").textContent = message;
-  popup.classList.remove("hidden");
-  if (type === "success") playSuccessSound();
-  setTimeout(() => popup.classList.add("hidden"), 4000);
-}
-
-// ===========================
-// Play Success Sound
-// ===========================
-function playSuccessSound() {
-  const audio = new Audio("https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3");
-  audio.play();
-}
-
-// ===========================
-// Toggle Forms
-// ===========================
-let currentActive = null;
-function toggleForm(userType) {
-  const customerBtn = document.getElementById("customerBtn");
-  const vendorBtn = document.getElementById("vendorBtn");
-
-  customerForm.classList.add("hidden");
-  vendorForm.classList.add("hidden");
-  customerBtn.classList.remove("active-btn");
-  vendorBtn.classList.remove("active-btn");
-
-  if (userType === currentActive) {
-    currentActive = null;
+const setBtnLoading = (btn, loading) => {
+  if (!btn) return;
+  if (loading) {
+    btn.dataset.label = btn.textContent.trim();
+    btn.innerHTML = '<span class="spinner" aria-hidden="true"></span>';
+    btn.disabled = true;
   } else {
-    currentActive = userType;
-    if (userType === "customer") {
-      customerForm.classList.remove("hidden");
-      customerBtn.classList.add("active-btn");
-    } else {
-      vendorForm.classList.remove("hidden");
-      vendorBtn.classList.add("active-btn");
-    }
+    btn.textContent = btn.dataset.label || btn.textContent;
+    btn.disabled = false;
   }
-}
+};
 
-// ===========================
-// CUSTOMER FORM SUBMISSION
-// ===========================
-customerForm.addEventListener("submit", async function (e) {
-  e.preventDefault();
-  const email = document.getElementById("email").value.trim();
+const openModal = (id) => {
+  const m = byId(id);
+  if (!m) return;
+  m.classList.add("open");
+  m.setAttribute("aria-hidden", "false");
+  track("modal_open", { id });
+};
+const closeModal = (id) => {
+  const m = byId(id);
+  if (!m) return;
+  m.classList.remove("open");
+  m.setAttribute("aria-hidden", "true");
+  track("modal_close", { id });
+};
 
-  if (!validateEmail(email)) {
-    showPopup("error", "Invalid email format.");
-    return;
-  }
+const showToast = (msg, kind = "info", autoCloseMs = 3500) => {
+  const wrap = byId("popup");
+  const card = byId("popupCard");
+  if (!wrap || !card) return;
+  card.textContent = msg;
+  card.style.background =
+    kind === "error"
+      ? "rgba(200,40,40,.97)"
+      : "rgba(30,70,80,.97)";
+  wrap.classList.add("open");
+  card.setAttribute("tabindex", "-1");
+  card.focus({ preventScroll: true });
+  setTimeout(() => wrap.classList.remove("open"), autoCloseMs);
+};
 
-  submitCustomerBtn.disabled = true;
-  submitCustomerBtn.textContent = "Submitting...";
+const showThankYou = () => {
+  const t = byId("thankYou");
+  if (!t) return;
+  t.classList.add("open");
+  setTimeout(() => t.classList.remove("open"), 2500);
+};
 
-  try {
-    const res = await fetch("https://escrawl-backend.onrender.com/api/customers", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email })
-    });
-
-    const result = await res.json();
-
-    if (!res.ok) {
-      showPopup("error", result.error || result.message || "Failed");
-      return;
-    }
-
-    await fetch("https://formspree.io/f/mdkdwovo", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
-      body: JSON.stringify({ email })
-    });
-
-    showPopup("success", "✅ You're on the waitlist!");
-    customerForm.reset();
-  } catch (err) {
-    console.error(err);
-    showPopup("error", "Submission failed. Try again.");
-  } finally {
-    submitCustomerBtn.disabled = false;
-    submitCustomerBtn.textContent = "Notify Me";
-  }
-});
-
-// ===========================
-// VENDOR FORM SUBMISSION
-// ===========================
-vendorForm.addEventListener("submit", async function (e) {
-  e.preventDefault();
-
-  const business = document.getElementById("business").value.trim();
-  const category = document.getElementById("category").value.trim();
-  const website = document.getElementById("website").value.trim();
-  const gst = document.getElementById("gst").value.trim();
-  const vendorEmail = document.getElementById("vendor-email").value.trim();
-
-  if (!validateEmail(vendorEmail)) {
-    showPopup("error", "Please enter a valid email address.");
-    return;
-  }
-
-  submitVendorBtn.disabled = true;
-  submitVendorBtn.textContent = "Submitting...";
-
-  try {
-    // Step 1: Abstract API Validation
-    const verifyRes = await fetch(
-      `https://emailvalidation.abstractapi.com/v1/?api_key=${ABSTRACT_API_KEY}&email=${vendorEmail}`
-    );
-
-    if (verifyRes.status === 429) {
-      showPopup("error", "Email validation limit exceeded. Try again later.");
-      return;
-    }
-
-    const verifyData = await verifyRes.json();
-    const isDeliverable = verifyData.deliverability === "DELIVERABLE";
-    const isGmail = verifyData.is_free_email?.value && vendorEmail.endsWith("@gmail.com");
-
-    if (!isDeliverable || !isGmail) {
-      showPopup("error", "Please use a valid and deliverable Gmail address.");
-      return;
-    }
-
-    // Step 2: Save to backend (MongoDB)
-    const backendRes = await fetch("https://escrawl-backend.onrender.com/api/vendors", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ business, category, website, gst, email: vendorEmail })
-    });
-
-    const backendData = await backendRes.json();
-
-    if (!backendRes.ok) {
-      showPopup("error", backendData.message || backendData.error || "Registration failed");
-      return;
-    }
-
-    // Step 3: Send to Formspree
-    await fetch("https://formspree.io/f/mdkdwovo", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
-      body: JSON.stringify({ email: vendorEmail })
-    });
-
-    showPopup("success", "🎉 Vendor registered successfully!");
-    vendorForm.reset();
-  } catch (err) {
-    console.error("Vendor Submission Error:", err);
-    showPopup("error", "Something went wrong. Please try again.");
-  } finally {
-    submitVendorBtn.disabled = false;
-    submitVendorBtn.textContent = "Join Vendor Waitlist";
-  }
-});
-
-
-
-// =============================
-// DOM Elements
-// =============================
-const feedbackBtn = document.getElementById("feedbackBtn");
-const feedbackModal = document.getElementById("feedbackModal");
-const feedbackClose = document.getElementById("feedbackClose");
-const feedbackForm = document.getElementById("feedbackForm");
-const feedbackText = document.getElementById("feedbackText");
-
-// Auto-switch backend URL
-const BACKEND_URL = "https://escrawl-backend.onrender.com";
- // <-- replace with your live backend URL
-
-// =============================
-// Open Modal
-// =============================
-feedbackBtn.addEventListener("click", () => {
-  feedbackModal.classList.remove("hidden");
-});
-
-// =============================
-// Close Modal
-// =============================
-feedbackClose.addEventListener("click", () => {
-  feedbackModal.classList.add("hidden");
-});
-
-// Close when clicking outside content
+// Close with backdrop click or buttons bearing data-close
 window.addEventListener("click", (e) => {
-  if (e.target === feedbackModal) {
-    feedbackModal.classList.add("hidden");
+  const tgt = e.target;
+  if (tgt.classList.contains("modal")) closeModal(tgt.id);
+});
+document.addEventListener("click", (e) => {
+  const btn = e.target.closest("[data-close]");
+  if (btn) {
+    e.preventDefault();
+    closeModal(btn.dataset.close);
   }
 });
 
-// =============================
-// Handle Form Submission
-// =============================
-feedbackForm.addEventListener("submit", async function (e) {
-  e.preventDefault();
-  const text = feedbackText.value.trim();
+// ===========================
+// HEADER audience buttons → open modals
+// ===========================
+byId("customerBtn")?.addEventListener("click", () => {
+  openModal("customerModal");
+  track("cta_click", { cta: "customer" });
+});
+byId("vendorBtn")?.addEventListener("click", () => {
+  openModal("vendorModal");
+  track("cta_click", { cta: "vendor" });
+});
 
-  if (!text) {
-    alert("Please write some feedback before submitting.");
-    return;
-  }
-
-  try {
-    // Send to backend
-    const res = await fetch(`${BACKEND_URL}/api/feedback`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text })
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      alert(data.error || "Failed to submit feedback.");
+// ===========================
+// COUNTDOWN
+// ===========================
+(function initCountdown() {
+  const daysEl = byId("days"),
+    hoursEl = byId("hours"),
+    minsEl = byId("minutes"),
+    secsEl = byId("seconds");
+  if (!daysEl) return;
+  const timer = setInterval(() => {
+    const now = Date.now();
+    const d = CONFIG.launchDate - now;
+    if (d <= 0) {
+      clearInterval(timer);
+      qs(".countdown").textContent = "We are live!";
       return;
     }
+    const days = Math.floor(d / 86400000);
+    const hours = Math.floor((d % 86400000) / 3600000);
+    const minutes = Math.floor((d % 3600000) / 60000);
+    const seconds = Math.floor((d % 60000) / 1000);
+    daysEl.textContent = String(days).padStart(2, "0");
+    hoursEl.textContent = String(hours).padStart(2, "0");
+    minsEl.textContent = String(minutes).padStart(2, "0");
+    secsEl.textContent = String(seconds).padStart(2, "0");
+  }, 1000);
+})();
 
-    // Reset form & close modal
-    feedbackText.value = "";
-    feedbackModal.classList.add("hidden");
+// ===========================
+// VIDEO ROTATION (with backend fallback)
+// ===========================
+(async function initVideos() {
+  const hero = byId("hero-video");
+  if (!hero) return;
+  let list = [];
+  try {
+    const res = await fetch(`${CONFIG.backendUrl}/api/hero-videos`);
+    if (res.ok) {
+      const data = await res.json();
+      list = Array.isArray(data) ? data : data.videos || [];
+    }
+  } catch {
+    /* ignore */
+  }
+  if (!list.length) list = CONFIG.defaultVideos;
 
-    // Show thank-you popup
-    showThankYouPopup();
+  let idx = 0;
+  const load = (i) => {
+    hero.src = list[i % list.length];
+  };
+  load(0);
+  setInterval(() => {
+    idx = (idx + 1) % list.length;
+    load(idx);
+  }, 20000);
+})();
 
-  } catch (error) {
-    console.error("Feedback submit error:", error);
-    alert("Something went wrong. Please try again.");
+// ===========================
+// FORMS (send only to backend)
+// ===========================
+byId("customer-form")?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const email = byId("email").value.trim();
+  const btn = byId("customerSubmit");
+  if (!validateEmail(email)) return showToast("Invalid email format", "error");
+  try {
+    setBtnLoading(btn, true);
+    const res = await fetch(`${CONFIG.backendUrl}/api/customers`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || data.message || "Failed to save");
+    closeModal("customerModal");
+    showToast("✅ You're on the waitlist!");
+    e.target.reset();
+    track("lead_submit", { type: "customer" });
+  } catch (err) {
+    showToast(err.message || "Submission failed. Try again.", "error");
+  } finally {
+    setBtnLoading(btn, false);
   }
 });
 
-// =============================
-// Thank-You Popup
-// =============================
-function showThankYouPopup() {
-  const popup = document.getElementById("thankYouPopup");
-  popup.classList.remove("hidden");
-  setTimeout(() => {
-    popup.classList.add("hidden");
-  }, 4000);
+byId("vendor-form")?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const business = byId("business").value.trim();
+  const category = byId("category").value.trim();
+  const website = byId("website").value.trim();
+  const gst = byId("gst").value.trim();
+  const email = byId("vendor-email").value.trim();
+  const btn = byId("vendorSubmit");
+
+  if (!business) return showToast("Please add your business name", "error");
+  if (!validateEmail(email)) return showToast("Please enter a valid email", "error");
+
+  try {
+    setBtnLoading(btn, true);
+    const res = await fetch(`${CONFIG.backendUrl}/api/vendors`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ business, category, website, gst, email }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.message || data.error || "Registration failed");
+
+    closeModal("vendorModal");
+    showToast("🎉 Vendor registered successfully!");
+    e.target.reset();
+    track("lead_submit", { type: "vendor" });
+  } catch (err) {
+    showToast(err.message || "Something went wrong. Please try again.", "error");
+  } finally {
+    setBtnLoading(btn, false);
+  }
+});
+
+// FEEDBACK
+byId("feedbackBtn")?.addEventListener("click", () => openModal("feedbackModal"));
+byId("feedbackForm")?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const text = byId("feedbackText").value.trim();
+  const btn = byId("feedbackSubmit");
+  if (!text) return showToast("Please write some feedback first.", "error");
+  try {
+    setBtnLoading(btn, true);
+    const res = await fetch(`${CONFIG.backendUrl}/api/feedback`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || "Failed to submit feedback");
+    byId("feedbackText").value = "";
+    closeModal("feedbackModal");
+    showThankYou();
+    track("feedback_submit");
+  } catch (err) {
+    showToast(err.message || "Something went wrong.", "error");
+  } finally {
+    setBtnLoading(btn, false);
+  }
+});
+
+// Optional: smooth scroll helper
+function scrollToContact() {
+  document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
 }
-
-function closeThankYouPopup() {
-  document.getElementById("thankYouPopup").classList.add("hidden");
-}
-
-
-
-  const videos = [
-   //Shorts and regular YouTube videos
-  "https://www.youtube.com/embed/k4UNU0dDvMA?autoplay=1&mute=1&controls=0&loop=1&playlist=k4UNU0dDvMA&rel=0",
-  "https://www.youtube.com/embed/sEwdYLadc_Q?autoplay=1&mute=1&controls=0&loop=1&playlist=sEwdYLadc_Q&rel=0",
-  "https://www.youtube.com/embed/PPt220id6KM?autoplay=1&mute=1&controls=0&loop=1&playlist=PPt220id6KM&rel=0"
-];
-
-let currentVideo = 0;
-const heroVideo = document.getElementById("hero-video");
-
-function loadNextVideo() {
-  heroVideo.classList.remove("slideUp");
-  currentVideo = (currentVideo + 1) % videos.length;
-  heroVideo.src = videos[currentVideo];
-
-  // Animation restart trick
-  void heroVideo.offsetWidth; // Force reflow
-  heroVideo.classList.add("slideUp");
-}
-
-// Load first video
-heroVideo.src = videos[0];
-
-// Change every 20 seconds
-setInterval(loadNextVideo, 20000);
-
-
-
-
-
-
-
-
-
-
+window.scrollToContact = scrollToContact;
