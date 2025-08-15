@@ -6,7 +6,7 @@ const CONFIG = {
   backendUrl:
     location.hostname.includes("localhost") || location.hostname === "127.0.0.1"
       ? "http://localhost:5000"
-      : "https://your-live-domain.com", // ← set your prod API origin
+      : "https://escrawl-backend.onrender.com", // ← set your prod API origin
   defaultVideos: [
     "https://www.youtube.com/embed/k4UNU0dDvMA?autoplay=1&mute=1&controls=0&loop=1&playlist=k4UNU0dDvMA&rel=0",
     "https://www.youtube.com/embed/sEwdYLadc_Q?autoplay=1&mute=1&controls=0&loop=1&playlist=sEwdYLadc_Q&rel=0",
@@ -252,3 +252,4 @@ function scrollToContact() {
   document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
 }
 window.scrollToContact = scrollToContact;
+
