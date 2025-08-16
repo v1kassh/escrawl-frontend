@@ -26,7 +26,7 @@
     .logo-img:hover{transform:scale(1.04)}
 
     .audience-buttons{display:flex;gap:.75rem;flex-wrap:wrap;align-items:center}
-    .audience-btn{background:transparent;border:2px solid #6e6e77;color:#033c4a;padding:.55rem 1rem;border-radius:10px;font-weight:600;cursor:pointer;transition:all .25s ease}
+    .audience-btn{background:transparent;border:2px solid #000000;color:#033c4a;padding:.55rem 1rem;border-radius:10px;font-weight:600;cursor:pointer;transition:all .25s ease}
     .audience-btn:hover{background:#033c4a;color:#fff}
     .audience-btn.active-btn{background:#fff;color:#245f73;border-color:#fff;box-shadow:0 4px 12px rgba(255,255,255,.25)}
 
@@ -173,3 +173,4 @@
   background: linear-gradient(45deg, #F58529, #DD2A7B, #8134AF, #515BD4);
 }
 .social a.youtube{ background: #FF0000; }
+
