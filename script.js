@@ -2,7 +2,7 @@
 // CONFIG
 // ===========================
 const CONFIG = {
-  launchDate: new Date("October 18, 2025 00:00:00").getTime(),
+  launchDate: new Date("December 01, 2025 00:00:00").getTime(),
   backendUrl:
     location.hostname.includes("localhost") || location.hostname === "127.0.0.1"
       ? "http://localhost:5000"
@@ -252,4 +252,5 @@ function scrollToContact() {
   document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
 }
 window.scrollToContact = scrollToContact;
+
 
